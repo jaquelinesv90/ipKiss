@@ -15,5 +15,22 @@ public class AccountRepository {
 	public void reset() {
 		accounts.clear();
 	}
+	
+	public void createAccount(Account account) {
+		accounts.add(account);
+	}
+	
+	public Account accountExists(String accountNumber) {
+		return accounts.stream()
+				.filter( a -> a.getAccountNumber().contains(accountNumber))
+				.findFirst()
+				.orElse(null);
+	}
+	
+	public Account getBalance(String accountNumber) {
+		return accounts.stream()
+				.filter(a -> a.getAccountNumber().equals(accountNumber))
+				.findFirst().get();
+	}
 
 }

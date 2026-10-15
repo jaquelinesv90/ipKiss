@@ -25,5 +25,12 @@ public class Account {
 	public String getBalance() {
 		return balance;
 	}
-	
+
+	public void setAccountNumber(String accountNumber) {
+		this.accountNumber = accountNumber;
+	}
+
+	public void setBalance(String balance) {
+		this.balance = balance;
+	}
 }

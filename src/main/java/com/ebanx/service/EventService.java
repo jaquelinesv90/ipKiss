@@ -1,11 +1,14 @@
 package com.ebanx.service;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import java.math.BigDecimal;
+
 import org.springframework.stereotype.Service;
 
+import com.ebanx.enums.EventType;
 import com.ebanx.model.Account;
 import com.ebanx.repository.AccountRepository;
+
+import dto.EventRequest;
 
 @Service
 public class EventService {
@@ -16,12 +19,19 @@ public class EventService {
 		this.accountRepository = accountRepository;
 	}
 	
-	public ResponseEntity<Void> createAccount(Account account) {
-		if(account.getAccountNumber().equals("")) {
-			return ResponseEntity.badRequest().build();
+	public Account createAccount(EventRequest request) {
+		
+		Account account = accountRepository.accountExists(request.getDestination());
+					
+		//se a conta ja existe tem que somar o valor, senao 
+		if(account != null && request.getType().equals(EventType.DEPOSIT)) {
+			account.getBalance().add(BigDecimal.valueOf(request.getAmount()));
+		}else {
+			account = new Account();
+			account.setAccountNumber(request.getDestination());
+			account.setBalance(BigDecimal.valueOf(request.getAmount()));
 		}
-		accountRepository.createAccount(account);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return accountRepository.createAccount(account);
 	}
 	
 	
@@ -29,9 +39,5 @@ public class EventService {
 		accountRepository.reset();
 	}
 	
-	/*
-	public boolean accountExists(String accountNumber) {
-		return accountRepository.accountExists(accountNumber);
-	}*/
 
 }

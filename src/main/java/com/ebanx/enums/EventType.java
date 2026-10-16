@@ -1,8 +1,12 @@
 package com.ebanx.enums;
 
-public enum EventType {
-	DEPOSIT,
-	WITHDRAW,
-	TRANSFER
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+public enum EventType {
+	
+	@JsonProperty("deposit") DEPOSIT,
+	@JsonProperty("withdraw") WITHDRAW,
+	@JsonProperty("transfer") TRANSFER
+
+	
 }

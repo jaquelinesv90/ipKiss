@@ -16,8 +16,9 @@ public class AccountRepository {
 		accounts.clear();
 	}
 	
-	public void createAccount(Account account) {
+	public Account createAccount(Account account) {
 		accounts.add(account);
+		return account;
 	}
 	
 	public Account accountExists(String accountNumber) {

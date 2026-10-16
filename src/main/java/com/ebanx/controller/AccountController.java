@@ -32,7 +32,7 @@ public class AccountController {
 		if(account == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("0");
 		}
-		return ResponseEntity.status(HttpStatus.OK).body(account.getBalance());
+		return ResponseEntity.status(HttpStatus.OK).body(account.getBalance().toString());
 	}
 
 }

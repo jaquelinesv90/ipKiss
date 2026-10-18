@@ -1,5 +1,7 @@
 package com.ebanx.controller;
 
+import java.util.Optional;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,12 +29,12 @@ public class AccountController {
 	public ResponseEntity<String> getBalance(
 			@Valid @RequestParam("account_id") String accountNumber) {
 		
-		Account account = accountService.accountExists(accountNumber);
+		Optional<Account> account = accountService.accountExists(accountNumber);
 		
 		if(account == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("0");
 		}
-		return ResponseEntity.status(HttpStatus.OK).body(account.getBalance().toString());
+		return ResponseEntity.status(HttpStatus.OK).body(account.get().getBalance().toString());
 	}
 
 }

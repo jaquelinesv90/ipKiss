@@ -1,5 +1,7 @@
 package com.ebanx.controller;
 
+import javax.security.auth.login.AccountNotFoundException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -7,9 +9,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ebanx.dto.AccountResponse;
+import com.ebanx.dto.EventRequest;
+import com.ebanx.dto.EventResponse;
+import com.ebanx.model.Account;
 import com.ebanx.service.EventService;
-
-import dto.EventRequest;
 
 @RestController
 @RequestMapping(value = "/event")
@@ -22,11 +26,54 @@ public class EventController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<EventRequest> create(@RequestBody EventRequest request) {
-		
-		eventService.createAccount(request);
-		
-		return ResponseEntity.status(HttpStatus.CREATED).body(request);
+	public ResponseEntity<?> handleMethod(@RequestBody EventRequest request) 
+						throws AccountNotFoundException {
+		return switch(request.getType()) {
+			case DEPOSIT -> deposit(request);
+			case WITHDRAW -> withdraw(request);
+			case TRANSFER -> transfer(request);
+		};
 	}
-
+	
+	public ResponseEntity<EventResponse> deposit(EventRequest request) {
+		
+		Account account = eventService.deposit(request);
+		
+		EventResponse response = new EventResponse(
+				null, new AccountResponse(account.getAccountNumber(), account.getBalance()));
+		
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+	}
+	
+	
+	public ResponseEntity<?> withdraw(EventRequest request) {
+		
+		Account account = eventService.withdraw(request);
+		
+		EventResponse response = new EventResponse(
+				new AccountResponse(account.getAccountNumber(), account.getBalance()), null);
+		if(response != null) {
+			return ResponseEntity.status(HttpStatus.CREATED).body(response);
+		}
+	
+	  return ResponseEntity.status(HttpStatus.NOT_FOUND).body("0");
+	}
+	
+	
+	public ResponseEntity<EventResponse> transfer(EventRequest request) throws AccountNotFoundException {
+		
+		EventResponse response;
+		try {
+			response = eventService.transfer(request);
+		} catch (AccountNotFoundException e) {
+			throw new AccountNotFoundException(e.getMessage());
+		}
+		
+		/*
+		EventResponse response = new EventResponse(
+				new AccountResponse(), new AccountResponse(account.getAccountNumber(), account.getBalance()));*/
+		
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+	}
+	
 }

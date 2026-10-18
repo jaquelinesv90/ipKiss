@@ -2,6 +2,7 @@ package com.ebanx.repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 
@@ -16,16 +17,18 @@ public class AccountRepository {
 		accounts.clear();
 	}
 	
-	public Account createAccount(Account account) {
+	// deposit
+	public Account deposit(Account account) {
 		accounts.add(account);
 		return account;
 	}
 	
-	public Account accountExists(String accountNumber) {
+	
+	
+	public Optional<Account> findByAccountNumber(String accountNumber) {
 		return accounts.stream()
 				.filter( a -> a.getAccountNumber().contains(accountNumber))
-				.findFirst()
-				.orElse(null);
+				.findFirst();
 	}
 	
 	public Account getBalance(String accountNumber) {
@@ -33,5 +36,5 @@ public class AccountRepository {
 				.filter(a -> a.getAccountNumber().equals(accountNumber))
 				.findFirst().get();
 	}
-
+	
 }

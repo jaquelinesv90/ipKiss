@@ -1,12 +1,13 @@
-package dto;
+package com.ebanx.dto;
 
 import com.ebanx.enums.EventType;
 
 public class EventRequest {
 
 	private EventType type;
-	private String destination;
 	private Integer amount;
+	private String destination;
+	private String origin;
 	
 	public EventRequest() {}
 	
@@ -27,5 +28,11 @@ public class EventRequest {
 	}
 	public void setAmount(Integer amount) {
 		this.amount = amount;
+	}
+	public String getOrigin() {
+		return origin;
+	}
+	public void setOrigin(String origin) {
+		this.origin = origin;
 	}
 }

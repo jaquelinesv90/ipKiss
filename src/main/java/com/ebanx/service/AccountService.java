@@ -1,5 +1,7 @@
 package com.ebanx.service;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
 import com.ebanx.model.Account;
@@ -14,18 +16,13 @@ public class AccountService {
 		this.accountRepository = accountRepository;
 	}
 	
-	public Account accountExists(String accountNumber) {
-		return accountRepository.accountExists(accountNumber);
+	public Optional<Account> accountExists(String accountNumber) {
+		return accountRepository.findByAccountNumber(accountNumber);
 	}
 	
 	
 	public Account getBalance(String accountNumber) {
 		return accountRepository.getBalance(accountNumber);
-	}
-	
-	
-	public void addBalance(Account account) {
-		
 	}
 	
 }

@@ -50,9 +50,11 @@ public class EventController {
 		
 		Account account = eventService.withdraw(request);
 		
-		EventResponse response = new EventResponse(
-				new AccountResponse(account.getAccountNumber(), account.getBalance()), null);
-		if(response != null) {
+		if(account != null) {
+			EventResponse response = new EventResponse(
+				new AccountResponse(account.getAccountNumber(), 
+						account.getBalance()), null);
+		
 			return ResponseEntity.status(HttpStatus.CREATED).body(response);
 		}
 	
@@ -60,7 +62,8 @@ public class EventController {
 	}
 	
 	
-	public ResponseEntity<EventResponse> transfer(EventRequest request) throws AccountNotFoundException {
+	public ResponseEntity<EventResponse> transfer(EventRequest request) 
+			throws AccountNotFoundException {
 		
 		EventResponse response;
 		try {

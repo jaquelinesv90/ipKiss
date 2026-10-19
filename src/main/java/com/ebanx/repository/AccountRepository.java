@@ -17,12 +17,20 @@ public class AccountRepository {
 		accounts.clear();
 	}
 	
-	// deposit
 	public Account deposit(Account account) {
 		accounts.add(account);
 		return account;
 	}
 	
+	public Account update(Account account) {
+		for (int i = 0; i < accounts.size(); i++) {
+		   if (accounts.get(i).getAccountNumber().equals(account.getAccountNumber())) {
+		       accounts.set(i, account);  
+		       return account;
+		    }
+		}
+		return null; 
+	}
 	
 	
 	public Optional<Account> findByAccountNumber(String accountNumber) {

@@ -52,7 +52,7 @@ public class EventService {
 		}else {
 			return null;
 		}
-		accountRepository.
+		accountRepository.update(account);
 		return account;
 		
 	}

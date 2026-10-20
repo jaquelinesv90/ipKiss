@@ -62,16 +62,16 @@ public class EventController {
 	}
 	
 	
-	public ResponseEntity<EventResponse> transfer(EventRequest request) 
-			throws AccountNotFoundException {
+	public ResponseEntity<EventResponse> transfer(EventRequest request) {
 		
-		EventResponse response;
+		EventResponse response = new EventResponse();
+		
 		try {
 			response = eventService.transfer(request);
 		} catch (AccountNotFoundException e) {
-			throw new AccountNotFoundException(e.getMessage());
+			e.printStackTrace();
 		}
-		
+				
 		/*
 		EventResponse response = new EventResponse(
 				new AccountResponse(), new AccountResponse(account.getAccountNumber(), account.getBalance()));*/

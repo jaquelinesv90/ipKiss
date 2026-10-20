@@ -1,14 +1,13 @@
 package com.ebanx.service;
 
-import java.math.BigDecimal;
-
 import javax.security.auth.login.AccountNotFoundException;
 
 import org.springframework.stereotype.Service;
 
+import com.ebanx.dto.AccountResponse;
 import com.ebanx.dto.EventRequest;
 import com.ebanx.dto.EventResponse;
-import com.ebanx.enums.EventType;
+import com.ebanx.exception.InsufficientFundsException;
 import com.ebanx.model.Account;
 import com.ebanx.repository.AccountRepository;
 
@@ -31,10 +30,10 @@ public class EventService {
 		Account account = accountRepository.findByAccountNumber(request.getDestination())
 				.orElse(new Account());
        if(account.getAccountNumber() != null) {
-    	   account.setBalance(account.getBalance().add(BigDecimal.valueOf(request.getAmount())));
+    	   account.setBalance(account.getBalance().add(request.getAmount()));
        }else {
     	   account.setAccountNumber(request.getDestination());
-    	   account.setBalance(BigDecimal.valueOf(request.getAmount()));
+    	   account.setBalance(request.getAmount());
        }
        accountRepository.deposit(account);
 		
@@ -48,7 +47,7 @@ public class EventService {
 				.orElse(new Account());
 		
 		if(account.getAccountNumber() != null) {
-			account.setBalance(account.getBalance().subtract(BigDecimal.valueOf(request.getAmount())));
+			account.setBalance(account.getBalance().subtract(request.getAmount()));
 		}else {
 			return null;
 		}
@@ -59,23 +58,30 @@ public class EventService {
 	
 	
 	public EventResponse transfer(EventRequest request) throws AccountNotFoundException {
-			
-		Account origin = accountRepository.findByAccountNumber(request.getOrigin())
-				.orElseThrow(() -> new AccountNotFoundException("Account not found"));
-		
-		//BigDecimal amount = BigDecimal.valueOf(request.getAmount());
-		
-		Account destination = accountRepository.findByAccountNumber(request.getDestination())
-				.orElseThrow(() -> new AccountNotFoundException("Account not found"));
-		
-		EventResponse response = new EventResponse();
-		
-		request.setOrigin(origin.getAccountNumber());
-		request.setDestination(destination.getAccountNumber());
-		
-		withdraw(request);
-		deposit(request);
-		
-		return response;
+
+	    Account origin = accountRepository.findByAccountNumber(request.getOrigin()).orElse(null);
+
+	    if (origin == null) {
+	        throw new AccountNotFoundException("Account not found");   
+	    }
+
+	    if (origin.getBalance().compareTo(request.getAmount()) < 0) {
+	        throw new InsufficientFundsException("Insufficient funds");
+	    }
+
+	    Account destination = accountRepository.findByAccountNumber(request.getDestination()).orElse(null);
+
+	    if (destination == null) {
+	        destination = accountRepository.deposit(new Account(request.getDestination(),request.getAmount()));
+	    }
+
+	    origin.setBalance(origin.getBalance().subtract(request.getAmount()));
+	    destination.setBalance(destination.getBalance().add(request.getAmount()));
+
+
+	    return new EventResponse(
+	            new AccountResponse(origin.getAccountNumber(), origin.getBalance()),
+	            new AccountResponse(destination.getAccountNumber(), destination.getBalance()));
 	}
+
 }
